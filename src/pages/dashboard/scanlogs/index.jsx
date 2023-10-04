@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { CandidateListView } from 'src/sections/candidate/view';
+import { ScanLogsListView } from 'src/sections/scanlogs/view';
 
 // ----------------------------------------------------------------------
 
@@ -8,10 +8,10 @@ export default function CandidateListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Candidate List</title>
+        <title> Dashboard: Scan Logs</title>
       </Helmet>
 
-      <CandidateListView />
+      <ScanLogsListView />
     </>
   );
 }

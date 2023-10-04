@@ -4,6 +4,7 @@ import { useEffect, useReducer, useCallback, useMemo } from 'react';
 import axios from 'src/utils/axios';
 //
 import { API_PATHS } from 'src/routes/paths';
+// import jwtDecode from 'jwt-decode';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
 
@@ -57,22 +58,23 @@ const STORAGE_KEY = 'accessToken';
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const initialize = useCallback(async () => {
+  const initialize = async () => {
     try {
       const accessToken = localStorage.getItem(STORAGE_KEY);
-      console.log(isValidToken(accessToken.split(" ")[1]), accessToken.split(" ")[1],'token:')
 
       if (accessToken && isValidToken(accessToken.split(" ")[1])) {
         setSession(accessToken);
 
-        const response = await axios.get(API_PATHS.me);
+        // const response = await axios.get(API_PATHS.me);
+        // const decoded = jwtDecode(accessToken.split(" ")[1]);
+        // console.log(decoded,'decode:')
 
-        const { user } = response.data;
+        // const { user } = response.data;
 
         dispatch({
           type: 'INITIAL',
           payload: {
-            user,
+            user: {},
             authenticated: true,
           },
         });
@@ -95,11 +97,11 @@ export function AuthProvider({ children }) {
         },
       });
     }
-  }, []);
+  };
 
   useEffect(() => {
     initialize();
-  }, [initialize]);
+  }, []);
 
   // LOGIN
   const login = useCallback(async (email, password) => {
@@ -111,14 +113,14 @@ export function AuthProvider({ children }) {
     const response = await axios.post(API_PATHS.login, data);
 
     if (response?.data?.data) {
-      const { token, user } = response.data.data;
+      const { token } = response.data.data;
 
       setSession(token);
 
       dispatch({
         type: 'LOGIN',
         payload: {
-          user,
+          user: {},
           authenticated: true,
         },
       });
@@ -177,7 +179,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
     }),
-    [login, logout, register, state.user, status]
+    [login, logout, register, state, status]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

@@ -1,1 +1,1 @@
-export { default as CandidateListView } from './candidate-list-view';
+export { default as CandidateListView } from './list-view';

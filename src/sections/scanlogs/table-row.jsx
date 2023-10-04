@@ -18,10 +18,12 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Link } from 'react-router-dom';
+import { FILE_BASE_PATH } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-export default function CandidateTableRow({
+export default function ScanLogsTableRow({
   row,
   selected,
   onSelectRow,
@@ -29,11 +31,15 @@ export default function CandidateTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { firstName, lastName, pin, location, portal, isActive, lastScan } = row;
+  const { name, status, canditateStatus, documentKey, expiryDate } = row;
 
   const confirm = useBoolean();
 
   const popover = usePopover();
+
+  const handleDownload = () => {
+    window.open(`${FILE_BASE_PATH}/${documentKey}`);
+  };
 
   return (
     <>
@@ -42,28 +48,28 @@ export default function CandidateTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>{firstName ?? ''}</TableCell>
-
-        <TableCell>{lastName ?? ''}</TableCell>
-
-        <TableCell>{pin ?? ''}</TableCell>
-
-        <TableCell>{location ?? ''}</TableCell>
-
-        <TableCell>{portal}</TableCell>
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>{name ?? ''}</TableCell>
 
         <TableCell>
           <Label
             variant="soft"
             color={
-              (isActive === true && 'success') || (isActive === false && 'warning') || 'default'
+              (status === 'completed' && 'success') || (status === false && 'warning') || 'default'
             }
           >
-            {`${isActive}`}
+            {`${status}`}
           </Label>
         </TableCell>
 
+        <TableCell>{canditateStatus ?? ''}</TableCell>
+
         <TableCell>
+          <Button onClick={handleDownload}>Download</Button>
+        </TableCell>
+
+        <TableCell>{expiryDate ?? ''}</TableCell>
+
+        {/* <TableCell>
           <ListItemText
             primary={format(new Date(lastScan), 'dd MMM yyyy')}
             secondary={format(new Date(lastScan), 'p')}
@@ -74,7 +80,7 @@ export default function CandidateTableRow({
               typography: 'caption',
             }}
           />
-        </TableCell>
+        </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1 }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -138,7 +144,7 @@ export default function CandidateTableRow({
   );
 }
 
-CandidateTableRow.propTypes = {
+ScanLogsTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

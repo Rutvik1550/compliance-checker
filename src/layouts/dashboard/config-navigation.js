@@ -31,7 +31,7 @@ const ICONS = {
   folder: icon('ic_folder'),
   banking: icon('ic_banking'),
   booking: icon('ic_booking'),
-  candidate: icon('ic_invoice'),
+  scanLogs: icon('ic_invoice'),
   product: icon('ic_product'),
   calendar: icon('ic_calendar'),
   disabled: icon('ic_disabled'),
@@ -69,18 +69,14 @@ export function useNavData() {
         // subheader: 'candidate',
         items: [
           {
+            title: t('scanLogs'),
+            path: paths.dashboard.scanLogs,
+            icon: ICONS.file,
+          },
+          {
             title: t('candidate'),
-            path: paths.dashboard.candidate.root,
-            icon: ICONS.candidate,
-            // children: [
-            //   { title: t('list'), path: paths.dashboard.candidate.root },
-            //   // {
-            //   //   title: t('details'),
-            //   //   path: paths.dashboard.candidate.demo.details,
-            //   // },
-            //   // { title: t('create'), path: paths.dashboard.candidate.new },
-            //   // { title: t('edit'), path: paths.dashboard.candidate.edit },
-            // ],
+            path: paths.dashboard.candidate,
+            icon: ICONS.user,
           },
         ],
       },

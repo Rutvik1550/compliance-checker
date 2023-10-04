@@ -13,7 +13,7 @@ export default function GuestGuard({ children }) {
 
   const searchParams = useSearchParams();
 
-  const returnTo = searchParams.get('returnTo') || paths.dashboard.root;
+  const returnTo = searchParams.get('returnTo') || paths.dashboard.candidate;
 
   const { authenticated } = useAuthContext();
 

@@ -22,7 +22,6 @@ import { Form, FormikProvider, useFormik } from 'formik';
 import * as Yup from 'yup';
 // import { status } from "../../../../utils/const";
 import { useSnackbar } from 'notistack';
-import { addCandidate, editCandidate } from 'src/utils/api/candidate';
 
 // ----------------------------------------------------------------------
 
@@ -40,9 +39,9 @@ const useStyles = makeStyles(() => ({
 
 const formObj = {
   pin: '',
-  firstName: '',
-  lastName: '',
-  // location: '',
+  firstname: '',
+  lastname: '',
+  location: '',
   portal: '',
 };
 
@@ -54,9 +53,9 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
 
   const CandidateSchema = Yup.object().shape({
     pin: Yup.string().required('This field is required'),
-    firstName: Yup.string().required('This field is required'),
-    lastName: Yup.string().required('This field is required'),
-    // location: Yup.string().required('This field is required'),
+    firstname: Yup.string().required('This field is required'),
+    lastname: Yup.string().required('This field is required'),
+    location: Yup.string().required('This field is required'),
     portal: Yup.string().required('This field is required'),
   });
 
@@ -72,29 +71,26 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
         // eslint-disable-next-line no-unused-vars
         const dataObj = {
           pin: values.pin,
-          firstName: values.firstName,
-          lastName: values.lastName,
-          // location: values.location,
-          portal: values.portal,
         };
+        console.log(values, 'value::');
 
-        if (isEdit) {
-          const res = await editCandidate(data.id, dataObj);
-          if (res?.data?.message) {
-            enqueueSnackbar(res.data.message, {
-              variant: 'success',
-            });
-          }
-        } else {
-          const res = await addCandidate(dataObj);
-          if (res?.data?.message) {
-            enqueueSnackbar(res.data.message, {
-              variant: 'success',
-            });
-          }
-        }
+        // if(isEdit) {
+        //   const res = await editCandidateData(dataObj, data.id);
+        //   if (res?.message) {
+        //     enqueueSnackbar(res.message, {
+        //       variant: "success",
+        //     });
+        //   }
+        // } else {
+        //   const res = await addCandidateData(data);
+        //   if (res?.message) {
+        //     enqueueSnackbar(res.message, {
+        //       variant: "success",
+        //     });
+        //   }
+        // }
 
-        // handleClose();
+        handleClose();
       } catch (error) {
         console.log('Error with CandidateForm onSubmit: ', error);
         enqueueSnackbar(error.message, { variant: 'error' });
@@ -108,7 +104,9 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
     <div>
       <Dialog className={classes.dialogMain} open={openForm} onClose={handleClose} fullWidth>
         <DialogTitle>
-          <Typography variant="heading2">{isEdit ? 'Edit Candidate' : 'Add Candidate'}</Typography>
+          <Typography variant="heading2">
+            {isEdit ? 'Edit Candidate' : 'Add Candidate'}
+          </Typography>
           <IconButton
             color="inherit"
             edge="end"
@@ -138,12 +136,12 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
                 <TextField
                   fullWidth
                   label="First Name"
-                  value={values.firstName}
+                  value={values.firstname}
                   onChange={(e) => {
-                    setFieldValue('firstName', e.target.value);
+                    setFieldValue('firstname', e.target.value);
                   }}
-                  error={Boolean(touched.firstName && errors.firstName)}
-                  helperText={touched.firstName && errors.firstName}
+                  error={Boolean(touched.firstname && errors.firstname)}
+                  helperText={touched.firstname && errors.firstname}
                   className={classes.formItem}
                 />
               </Box>
@@ -151,16 +149,16 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
                 <TextField
                   fullWidth
                   label="Last Name"
-                  value={values.lastName}
+                  value={values.lastname}
                   onChange={(e) => {
-                    setFieldValue('lastName', e.target.value);
+                    setFieldValue('lastname', e.target.value);
                   }}
-                  error={Boolean(touched.lastName && errors.lastName)}
-                  helperText={touched.lastName && errors.lastName}
+                  error={Boolean(touched.lastname && errors.lastname)}
+                  helperText={touched.lastname && errors.lastname}
                   className={classes.formItem}
                 />
               </Box>
-              {/* <Box className={classes.formItem}>
+              <Box className={classes.formItem}>
                 <TextField
                   fullWidth
                   label="Location"
@@ -172,7 +170,7 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
                   helperText={touched.location && errors.location}
                   className={classes.formItem}
                 />
-              </Box> */}
+              </Box>
               <Box className={classes.formItem}>
                 <FormControl fullWidth>
                   <InputLabel id="portal-select-label">Portal</InputLabel>

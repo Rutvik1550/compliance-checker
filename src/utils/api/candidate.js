@@ -14,7 +14,7 @@ export const getCandidates = async () => {
   }
 };
 
-export const addCandidates = async (data) => {
+export const addCandidate = async (data) => {
   try {
     const res = await axiosInstance.post(API_PATHS.candidate, data);
     if (res?.data) {
@@ -22,12 +22,12 @@ export const addCandidates = async (data) => {
     }
     return null;
   } catch (error) {
-    console.log('Error with addCandidates: ', error);
+    console.log('Error with addCandidate: ', error);
     return { error };
   }
 };
 
-export const editCandidates = async (id, data) => {
+export const editCandidate = async (id, data) => {
   try {
     const res = await axiosInstance.put(`${API_PATHS.candidate}/${id}`, data);
     if (res?.data) {
@@ -35,7 +35,7 @@ export const editCandidates = async (id, data) => {
     }
     return null;
   } catch (error) {
-    console.log('Error with getCandidates: ', error);
+    console.log('Error with editCandidate: ', error);
     return { error };
   }
 };

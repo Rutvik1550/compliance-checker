@@ -10,7 +10,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 
 // const IndexPage = lazy(() => import('src/pages/dashboard/one'));
-const CandidateListPage = lazy(() => import('src/pages/dashboard/candidate/list'));
+const CandidateListPage = lazy(() => import('src/pages/dashboard/candidate'));
+const ScanLogsListPage = lazy(() => import('src/pages/dashboard/scanlogs'));
 
 // ----------------------------------------------------------------------
 
@@ -29,11 +30,12 @@ export const dashboardRoutes = [
     children: [
       // { path: 'candidate', element: <PageTwo /> },
       {
+        path: 'scanLogs',
+        element: <ScanLogsListPage />,
+      },
+      {
         path: 'candidate',
-        children: [
-          { element: <CandidateListPage />, index: true },
-          { path: 'list', element: <CandidateListPage /> },
-        ],
+        element: <CandidateListPage />,
       },
     ],
   },

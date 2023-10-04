@@ -1,8 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
-// import Tab from '@mui/material/Tab';
-// import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
@@ -14,16 +12,9 @@ import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 // routes
 import { paths } from 'src/routes/paths';
-// import { useRouter } from 'src/routes/hooks';
-// import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fTimestamp } from 'src/utils/format-time';
-// _mock
-import { _invoices } from 'src/_mock';
 // components
-// import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -41,45 +32,24 @@ import {
 } from 'src/components/table';
 //
 import { InputAdornment, TextField } from '@mui/material';
-import { getCandidates } from 'src/utils/api/candidate';
-import CandidateTableRow from '../candidate-table-row';
-import CandidateForm from '../candidateForm';
+import { getScanLogs } from 'src/utils/api/scanLogs';
+import ScanLogsTableRow from '../table-row';
+import ScanLogsForm from '../scanLogsForm';
 
 // ----------------------------------------------------------------------
-// candidate checker
-
-// Pin
-// fistname
-// lastname
-// location
-// portal - nmc - dbs
-// save button
-
-// profile
-// passchange and
 
 const TABLE_HEAD = [
-  { id: 'firstName', label: 'First Name' },
-  { id: 'lastName', label: 'Last Name' },
-  { id: 'pin', label: 'Pin' },
-  { id: 'location', label: 'Location' },
-  { id: 'portal', label: 'Portal' },
-  { id: 'isActive', label: 'Status' },
-  { id: 'lastScan', label: 'Last Scan' },
+  { id: 'name', label: 'Name' },
+  { id: 'status', label: 'Scan Status' },
+  { id: 'canditateStatus', label: 'Canditate Status' },
+  { id: 'documentKey', label: 'Download' },
+  { id: 'expiryDate', label: 'Expiry Date' },
   { id: '' },
 ];
 
-const defaultFilters = {
-  name: '',
-  service: [],
-  status: 'all',
-  startDate: null,
-  endDate: null,
-};
-
 // ----------------------------------------------------------------------
 
-export default function CandidateListView() {
+export default function ScanLogsListView() {
   const theme = useTheme();
   const settings = useSettingsContext();
   // const router = useRouter();
@@ -87,23 +57,16 @@ export default function CandidateListView() {
   const confirm = useBoolean();
   const [tableData, setTableData] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [filters, setFilters] = useState(defaultFilters);
   const [openPopup, setOpenPopup] = useState({
     open: false,
     isEdit: false,
     row: null,
   });
 
-  const dateError =
-    filters.startDate && filters.endDate
-      ? filters.startDate.getTime() > filters.endDate.getTime()
-      : false;
-
   const dataFiltered = applyFilter({
     inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
-    filters,
-    dateError,
+    searchText,
   });
 
   const dataInPage = dataFiltered.slice(
@@ -146,7 +109,7 @@ export default function CandidateListView() {
     [openPopup]
   );
 
-  const handleCreateCandidate = () => {
+  const handleCreateScanLogs = () => {
     setOpenPopup((prev) => ({
       ...prev,
       open: true,
@@ -158,12 +121,20 @@ export default function CandidateListView() {
     setSearchText(value);
   };
 
-  useEffect(() => {
-    async function init() {
-      const result = await getCandidates();
-      console.log(result, 'resutl:');
+  async function getScanLogList() {
+    const result = await getScanLogs();
+    if (result?.data) {
+      setTableData(
+        result.data.map((item) => ({
+          ...item,
+          name: `${item.candidate.firstName} ${item.candidate.lastName}`,
+        }))
+      );
     }
-    init();
+  }
+
+  useEffect(() => {
+    getScanLogList();
   }, []);
 
   return (
@@ -177,8 +148,8 @@ export default function CandidateListView() {
               href: paths.dashboard.root,
             },
             {
-              name: 'Candidate',
-              href: paths.dashboard.candidate.root,
+              name: 'ScanLogs',
+              href: paths.dashboard.scanLogs,
             },
             {
               name: 'List',
@@ -187,12 +158,12 @@ export default function CandidateListView() {
           action={
             <Button
               // component={RouterLink}
-              // href={paths.dashboard.candidate.new}
-              onClick={handleCreateCandidate}
+              // href={paths.dashboard.scanLogs.new}
+              onClick={handleCreateScanLogs}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Candidate
+              New ScanLogs
             </Button>
           }
           sx={{
@@ -218,7 +189,7 @@ export default function CandidateListView() {
                 fullWidth
                 value={searchText}
                 onChange={handleFilterChange}
-                placeholder="Search customer or candidate number..."
+                placeholder="Search customer or scanLogs number..."
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -294,7 +265,7 @@ export default function CandidateListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <CandidateTableRow
+                      <ScanLogsTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -353,7 +324,7 @@ export default function CandidateListView() {
       />
 
       {openPopup.open && (
-        <CandidateForm
+        <ScanLogsForm
           openForm={openPopup.open}
           isEdit={openPopup.isEdit}
           handleClose={() => {
@@ -372,9 +343,7 @@ export default function CandidateListView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, status, service, startDate, endDate } = filters;
-
+function applyFilter({ inputData, comparator, searchText }) {
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -385,33 +354,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-  if (name) {
+  if (searchText) {
     inputData = inputData.filter(
-      (candidate) =>
-        candidate.candidateNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        candidate.candidateTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (data) =>
+        data?.name?.toLowerCase().indexOf(searchText.toLowerCase()) > -1 ||
+        data?.canditateStatus?.toLowerCase().indexOf(searchText.toLowerCase()) > -1
     );
   }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((candidate) => candidate.status === status);
-  }
-
-  if (service.length) {
-    inputData = inputData.filter((candidate) =>
-      candidate.items.some((filterItem) => service.includes(filterItem.service))
-    );
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (candidate) =>
-          fTimestamp(candidate.createDate) >= fTimestamp(startDate) &&
-          fTimestamp(candidate.createDate) <= fTimestamp(endDate)
-      );
-    }
-  }
-
   return inputData;
 }

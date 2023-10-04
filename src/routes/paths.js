@@ -22,12 +22,8 @@ export const paths = {
     group: {
       root: `${ROOTS.DASHBOARD}/group`
     },
-    candidate: {
-      root: `${ROOTS.DASHBOARD}/candidate`,
-      new: `${ROOTS.DASHBOARD}/candidate/new`,
-      details: (id) => `${ROOTS.DASHBOARD}/candidate/${id}`,
-      edit: (id) => `${ROOTS.DASHBOARD}/candidate/${id}/edit`,
-    },
+    candidate: `${ROOTS.DASHBOARD}/candidate`,
+    scanLogs: `${ROOTS.DASHBOARD}/scanLogs`,
   },
 };
 
@@ -37,4 +33,8 @@ export const API_PATHS = {
 
   // Candidate
   candidate: '/api/candidate',
+
+  // scan logs
+  scanLogs: '/api/checker/scan/logs',
+  trigger: '/api/checker/trigger',
 }
