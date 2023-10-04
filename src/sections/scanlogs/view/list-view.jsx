@@ -283,7 +283,7 @@ export default function ScanLogsListView() {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         // onViewRow={() => handleViewRow(row.id)}
-                        onEditRow={() => handleEditRow(row)}
+                        // onEditRow={() => handleEditRow(row)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                       />
                     ))}

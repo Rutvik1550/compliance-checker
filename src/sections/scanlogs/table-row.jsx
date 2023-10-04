@@ -107,7 +107,7 @@ export default function ScanLogsTableRow({
 
         <MenuItem
           onClick={() => {
-            onEditRow();
+            // onEditRow();
             popover.onClose();
           }}
         >
@@ -115,18 +115,18 @@ export default function ScanLogsTableRow({
           Edit
         </MenuItem>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        {/* <Divider sx={{ borderStyle: 'dashed' }} /> */}
 
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
-            confirm.onTrue();
+            // confirm.onTrue();
             popover.onClose();
           }}
           sx={{ color: 'error.main' }}
         >
           <Iconify icon="solar:trash-bin-trash-bold" />
           Delete
-        </MenuItem>
+        </MenuItem> */}
       </CustomPopover>
 
       <ConfirmDialog
