@@ -4,7 +4,12 @@ import { HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: HOST_API });
+const axiosInstance = axios.create({
+  baseURL: HOST_API,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 axiosInstance.interceptors.response.use(
   (res) => res,
@@ -24,11 +29,3 @@ export const fetcher = async (args) => {
 };
 
 // ----------------------------------------------------------------------
-
-export const endpoints = {
-  auth: {
-    me: '/api/auth/me',
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-  },
-};

@@ -12,7 +12,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ComplianceAnalytic({ title, total, icon, color, percent, price }) {
+export default function CandidateAnalytic({ title, total, icon, color, percent, price }) {
   return (
     <Stack
       spacing={2.5}
@@ -51,7 +51,7 @@ export default function ComplianceAnalytic({ title, total, icon, color, percent,
         <Typography variant="subtitle1">{title}</Typography>
 
         <Box component="span" sx={{ color: 'text.disabled', typography: 'body2' }}>
-          {fShortenNumber(total)} compliances
+          {fShortenNumber(total)} candidates
         </Box>
 
         <Typography variant="subtitle2">{fCurrency(price)}</Typography>
@@ -60,7 +60,7 @@ export default function ComplianceAnalytic({ title, total, icon, color, percent,
   );
 }
 
-ComplianceAnalytic.propTypes = {
+CandidateAnalytic.propTypes = {
   color: PropTypes.string,
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   percent: PropTypes.number,

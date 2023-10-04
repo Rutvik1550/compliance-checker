@@ -36,7 +36,7 @@ export default function AuthGuard({ children }) {
       setChecked(true);
     }
   }, [authenticated, method, router]);
-
+console.log(authenticated, checked,'checkL:::')
   useEffect(() => {
     check();
     // eslint-disable-next-line react-hooks/exhaustive-deps

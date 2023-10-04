@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 // utils
-import axios, { endpoints } from 'src/utils/axios';
+import axios from 'src/utils/axios';
 //
+import { API_PATHS } from 'src/routes/paths';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
 
@@ -17,31 +18,33 @@ import { isValidToken, setSession } from './utils';
 const initialState = {
   user: null,
   loading: true,
+  authenticated: false,
 };
 
 const reducer = (state, action) => {
   if (action.type === 'INITIAL') {
     return {
       loading: false,
-      user: action.payload.user,
+      ...action.payload,
     };
   }
   if (action.type === 'LOGIN') {
     return {
       ...state,
-      user: action.payload.user,
+      ...action.payload,
     };
   }
   if (action.type === 'REGISTER') {
     return {
       ...state,
-      user: action.payload.user,
+      ...action.payload,
     };
   }
   if (action.type === 'LOGOUT') {
     return {
       ...state,
       user: null,
+      authenticated: false,
     };
   }
   return state;
@@ -56,12 +59,13 @@ export function AuthProvider({ children }) {
 
   const initialize = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      const accessToken = localStorage.getItem(STORAGE_KEY);
+      console.log(isValidToken(accessToken.split(" ")[1]), accessToken.split(" ")[1],'token:')
 
-      if (accessToken && isValidToken(accessToken)) {
+      if (accessToken && isValidToken(accessToken.split(" ")[1])) {
         setSession(accessToken);
 
-        const response = await axios.get(endpoints.auth.me);
+        const response = await axios.get(API_PATHS.me);
 
         const { user } = response.data;
 
@@ -69,6 +73,7 @@ export function AuthProvider({ children }) {
           type: 'INITIAL',
           payload: {
             user,
+            authenticated: true,
           },
         });
       } else {
@@ -76,6 +81,7 @@ export function AuthProvider({ children }) {
           type: 'INITIAL',
           payload: {
             user: null,
+            authenticated: false,
           },
         });
       }
@@ -85,6 +91,7 @@ export function AuthProvider({ children }) {
         type: 'INITIAL',
         payload: {
           user: null,
+          authenticated: false,
         },
       });
     }
@@ -101,18 +108,23 @@ export function AuthProvider({ children }) {
       password,
     };
 
-    const response = await axios.post(endpoints.auth.login, data);
+    const response = await axios.post(API_PATHS.login, data);
 
-    const { accessToken, user } = response.data;
+    if (response?.data?.data) {
+      const { token, user } = response.data.data;
 
-    setSession(accessToken);
+      setSession(token);
 
-    dispatch({
-      type: 'LOGIN',
-      payload: {
-        user,
-      },
-    });
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user,
+          authenticated: true,
+        },
+      });
+      return response.data;
+    }
+    return null;
   }, []);
 
   // REGISTER
@@ -124,16 +136,17 @@ export function AuthProvider({ children }) {
       lastName,
     };
 
-    const response = await axios.post(endpoints.auth.register, data);
+    const response = await axios.post(API_PATHS.signUp, data);
 
     const { accessToken, user } = response.data;
 
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
+    localStorage.setItem(STORAGE_KEY, accessToken);
 
     dispatch({
       type: 'REGISTER',
       payload: {
         user,
+        authenticated: true,
       },
     });
   }, []);

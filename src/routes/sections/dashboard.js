@@ -10,7 +10,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 
 // const IndexPage = lazy(() => import('src/pages/dashboard/one'));
-const ComplianceListPage = lazy(() => import('src/pages/dashboard/compliance/list'));
+const CandidateListPage = lazy(() => import('src/pages/dashboard/candidate/list'));
 
 // ----------------------------------------------------------------------
 
@@ -18,21 +18,21 @@ export const dashboardRoutes = [
   {
     path: 'dashboard',
     element: (
-      // <AuthGuard>
+      <AuthGuard>
         <DashboardLayout>
           <Suspense fallback={<LoadingScreen />}>
             <Outlet />
           </Suspense>
         </DashboardLayout>
-      // </AuthGuard>
+      </AuthGuard>
     ),
     children: [
-      // { path: 'compliance', element: <PageTwo /> },
+      // { path: 'candidate', element: <PageTwo /> },
       {
-        path: 'compliance',
+        path: 'candidate',
         children: [
-          { element: <ComplianceListPage />, index: true },
-          { path: 'list', element: <ComplianceListPage /> },
+          { element: <CandidateListPage />, index: true },
+          { path: 'list', element: <CandidateListPage /> },
         ],
       },
     ],

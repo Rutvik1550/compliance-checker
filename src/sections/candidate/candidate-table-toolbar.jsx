@@ -1,24 +1,24 @@
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 // @mui
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Stack from '@mui/material/Stack';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
+// import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
+// import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
+// import OutlinedInput from '@mui/material/OutlinedInput';
+// import Select from '@mui/material/Select';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function ComplianceTableToolbar({
+export default function CandidateTableToolbar({
   filters,
   onFilters,
   //
@@ -34,29 +34,29 @@ export default function ComplianceTableToolbar({
     [onFilters]
   );
 
-  const handleFilterService = useCallback(
-    (event) => {
-      onFilters(
-        'service',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
-    },
-    [onFilters]
-  );
+  // const handleFilterService = useCallback(
+  //   (event) => {
+  //     onFilters(
+  //       'service',
+  //       typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
+  //     );
+  //   },
+  //   [onFilters]
+  // );
 
-  const handleFilterStartDate = useCallback(
-    (newValue) => {
-      onFilters('startDate', newValue);
-    },
-    [onFilters]
-  );
+  // const handleFilterStartDate = useCallback(
+  //   (newValue) => {
+  //     onFilters('startDate', newValue);
+  //   },
+  //   [onFilters]
+  // );
 
-  const handleFilterEndDate = useCallback(
-    (newValue) => {
-      onFilters('endDate', newValue);
-    },
-    [onFilters]
-  );
+  // const handleFilterEndDate = useCallback(
+  //   (newValue) => {
+  //     onFilters('endDate', newValue);
+  //   },
+  //   [onFilters]
+  // );
 
   return (
     <>
@@ -72,7 +72,7 @@ export default function ComplianceTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <FormControl
+        {/* <FormControl
           sx={{
             flexShrink: 0,
             width: { xs: 1, md: 180 },
@@ -95,9 +95,9 @@ export default function ComplianceTableToolbar({
               </MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </FormControl> */}
 
-        <DatePicker
+        {/* <DatePicker
           label="Start date"
           value={filters.startDate}
           onChange={handleFilterStartDate}
@@ -120,14 +120,14 @@ export default function ComplianceTableToolbar({
           sx={{
             maxWidth: { md: 180 },
           }}
-        />
+        /> */}
 
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search customer or compliance number..."
+            placeholder="Search customer or candidate number..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -180,7 +180,7 @@ export default function ComplianceTableToolbar({
   );
 }
 
-ComplianceTableToolbar.propTypes = {
+CandidateTableToolbar.propTypes = {
   dateError: PropTypes.bool,
   filters: PropTypes.object,
   onFilters: PropTypes.func,

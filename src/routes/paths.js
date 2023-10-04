@@ -22,11 +22,19 @@ export const paths = {
     group: {
       root: `${ROOTS.DASHBOARD}/group`
     },
-    compliance: {
-      root: `${ROOTS.DASHBOARD}/compliance`,
-      new: `${ROOTS.DASHBOARD}/compliance/new`,
-      details: (id) => `${ROOTS.DASHBOARD}/compliance/${id}`,
-      edit: (id) => `${ROOTS.DASHBOARD}/compliance/${id}/edit`,
+    candidate: {
+      root: `${ROOTS.DASHBOARD}/candidate`,
+      new: `${ROOTS.DASHBOARD}/candidate/new`,
+      details: (id) => `${ROOTS.DASHBOARD}/candidate/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/candidate/${id}/edit`,
     },
   },
 };
+
+export const API_PATHS = {
+  signUp: '/api/signup',
+  login: '/api/login',
+
+  // Candidate
+  candidate: '/api/candidate',
+}

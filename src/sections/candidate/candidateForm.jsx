@@ -45,13 +45,13 @@ const formObj = {
   portal: '',
 };
 
-function ComplianceForm({ openForm, handleClose, data, isEdit }) {
+function CandidateForm({ openForm, handleClose, data, isEdit }) {
   const classes = useStyles();
   // eslint-disable-next-line no-unused-vars
-  // const [ComplianceData, setComplianceData] = useState(formObj);
+  // const [CandidateData, setCandidateData] = useState(formObj);
   const { enqueueSnackbar } = useSnackbar();
 
-  const ComplianceSchema = Yup.object().shape({
+  const CandidateSchema = Yup.object().shape({
     pin: Yup.string().required('This field is required'),
     firstname: Yup.string().required('This field is required'),
     lastname: Yup.string().required('This field is required'),
@@ -62,7 +62,7 @@ function ComplianceForm({ openForm, handleClose, data, isEdit }) {
   const formik = useFormik({
     validateOnChange: true,
     validateOnBlur: true,
-    validationSchema: ComplianceSchema,
+    validationSchema: CandidateSchema,
     enableReinitialize: true,
     initialValues: isEdit ? data : formObj,
     onSubmit: async (v, { setSubmitting, setErrors }) => {
@@ -75,14 +75,14 @@ function ComplianceForm({ openForm, handleClose, data, isEdit }) {
         console.log(values, 'value::');
 
         // if(isEdit) {
-        //   const res = await editComplianceData(dataObj, data.id);
+        //   const res = await editCandidateData(dataObj, data.id);
         //   if (res?.message) {
         //     enqueueSnackbar(res.message, {
         //       variant: "success",
         //     });
         //   }
         // } else {
-        //   const res = await addComplianceData(data);
+        //   const res = await addCandidateData(data);
         //   if (res?.message) {
         //     enqueueSnackbar(res.message, {
         //       variant: "success",
@@ -92,7 +92,7 @@ function ComplianceForm({ openForm, handleClose, data, isEdit }) {
 
         handleClose();
       } catch (error) {
-        console.log('Error with ComplianceForm onSubmit: ', error);
+        console.log('Error with CandidateForm onSubmit: ', error);
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     },
@@ -105,7 +105,7 @@ function ComplianceForm({ openForm, handleClose, data, isEdit }) {
       <Dialog className={classes.dialogMain} open={openForm} onClose={handleClose} fullWidth>
         <DialogTitle>
           <Typography variant="heading2">
-            {isEdit ? 'Edit Compliance' : 'Add Compliance'}
+            {isEdit ? 'Edit Candidate' : 'Add Candidate'}
           </Typography>
           <IconButton
             color="inherit"
@@ -209,11 +209,11 @@ function ComplianceForm({ openForm, handleClose, data, isEdit }) {
     </div>
   );
 }
-ComplianceForm.propTypes = {
+CandidateForm.propTypes = {
   openForm: PropTypes.any,
   handleClose: PropTypes.any,
   data: PropTypes.any,
   isEdit: PropTypes.bool,
 };
 
-export default ComplianceForm;
+export default CandidateForm;

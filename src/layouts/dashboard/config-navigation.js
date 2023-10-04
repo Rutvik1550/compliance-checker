@@ -31,7 +31,7 @@ const ICONS = {
   folder: icon('ic_folder'),
   banking: icon('ic_banking'),
   booking: icon('ic_booking'),
-  compliance: icon('ic_invoice'),
+  candidate: icon('ic_invoice'),
   product: icon('ic_product'),
   calendar: icon('ic_calendar'),
   disabled: icon('ic_disabled'),
@@ -66,20 +66,20 @@ export function useNavData() {
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
-        // subheader: 'compliance',
+        // subheader: 'candidate',
         items: [
           {
-            title: t('compliance'),
-            path: paths.dashboard.compliance.root,
-            icon: ICONS.compliance,
+            title: t('candidate'),
+            path: paths.dashboard.candidate.root,
+            icon: ICONS.candidate,
             // children: [
-            //   { title: t('list'), path: paths.dashboard.compliance.root },
+            //   { title: t('list'), path: paths.dashboard.candidate.root },
             //   // {
             //   //   title: t('details'),
-            //   //   path: paths.dashboard.compliance.demo.details,
+            //   //   path: paths.dashboard.candidate.demo.details,
             //   // },
-            //   // { title: t('create'), path: paths.dashboard.compliance.new },
-            //   // { title: t('edit'), path: paths.dashboard.compliance.edit },
+            //   // { title: t('create'), path: paths.dashboard.candidate.new },
+            //   // { title: t('edit'), path: paths.dashboard.candidate.edit },
             // ],
           },
         ],

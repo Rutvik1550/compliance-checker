@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 // @mui
 // import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
@@ -14,8 +13,6 @@ import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// utils
-import { fCurrency } from 'src/utils/format-number';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -24,7 +21,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function ComplianceTableRow({
+export default function CandidateTableRow({
   row,
   selected,
   onSelectRow,
@@ -32,7 +29,7 @@ export default function ComplianceTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalAmount } = row;
+  const { firstName, lastName, pin, location, portal, isActive, lastScan } = row;
 
   const confirm = useBoolean();
 
@@ -45,73 +42,38 @@ export default function ComplianceTableRow({
           <Checkbox checked={selected} onClick={onSelectRow} />
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={invoiceTo?.name} sx={{ mr: 2 }}>
-            {invoiceTo?.name?.charAt(0)?.toUpperCase()}
-          </Avatar>
+        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>{firstName ?? ''}</TableCell>
 
-          {/* <ListItemText
-            disableTypography
-            primary={
-              <Typography variant="body2" noWrap>
-                {invoiceTo?.name}
-              </Typography>
-            }
-            secondary={
-              <Link
-                noWrap
-                variant="body2"
-                onClick={onViewRow}
-                sx={{ color: 'text.disabled', cursor: 'pointer' }}
-              >
-                {invoiceNumber}
-              </Link>
-            }
-          /> */}
-        </TableCell>
+        <TableCell>{lastName ?? ''}</TableCell>
 
-        <TableCell>
-          <ListItemText
-            primary={format(new Date(createDate), 'dd MMM yyyy')}
-            secondary={format(new Date(createDate), 'p')}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
-          />
-        </TableCell>
+        <TableCell>{pin ?? ''}</TableCell>
 
-        <TableCell>
-          <ListItemText
-            primary={format(new Date(dueDate), 'dd MMM yyyy')}
-            secondary={format(new Date(dueDate), 'p')}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
-          />
-        </TableCell>
+        <TableCell>{location ?? ''}</TableCell>
 
-        <TableCell>{fCurrency(totalAmount)}</TableCell>
-
-        {/* <TableCell align="center">{sent}</TableCell> */}
+        <TableCell>{portal}</TableCell>
 
         <TableCell>
           <Label
             variant="soft"
             color={
-              (status === 'paid' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'overdue' && 'error') ||
-              'default'
+              (isActive === true && 'success') || (isActive === false && 'warning') || 'default'
             }
           >
-            {status}
+            {`${isActive}`}
           </Label>
+        </TableCell>
+
+        <TableCell>
+          <ListItemText
+            primary={format(new Date(lastScan), 'dd MMM yyyy')}
+            secondary={format(new Date(lastScan), 'p')}
+            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+            secondaryTypographyProps={{
+              mt: 0.5,
+              component: 'span',
+              typography: 'caption',
+            }}
+          />
         </TableCell>
 
         <TableCell align="right" sx={{ px: 1 }}>
@@ -176,7 +138,7 @@ export default function ComplianceTableRow({
   );
 }
 
-ComplianceTableRow.propTypes = {
+CandidateTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

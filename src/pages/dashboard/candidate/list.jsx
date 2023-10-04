@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { ComplianceListView } from 'src/sections/compliance/view';
+import { CandidateListView } from 'src/sections/candidate/view';
 
 // ----------------------------------------------------------------------
 
-export default function ComplianceListPage() {
+export default function CandidateListPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Compliance List</title>
+        <title> Dashboard: Candidate List</title>
       </Helmet>
 
-      <ComplianceListView />
+      <CandidateListView />
     </>
   );
 }

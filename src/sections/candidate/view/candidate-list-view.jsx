@@ -1,5 +1,4 @@
-import sumBy from 'lodash/sumBy';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { useTheme } from '@mui/material/styles';
 // import Tab from '@mui/material/Tab';
@@ -8,7 +7,6 @@ import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -23,7 +21,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 // utils
 import { fTimestamp } from 'src/utils/format-time';
 // _mock
-import { _invoices, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+import { _invoices } from 'src/_mock';
 // components
 // import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -42,14 +40,13 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 //
-import ComplianceAnalytic from '../compliance-analytic';
-import ComplianceTableRow from '../compliance-table-row';
-import ComplianceTableToolbar from '../compliance-table-toolbar';
-import ComplianceTableFiltersResult from '../compliance-table-filters-result';
-import ComplianceForm from '../complianceForm';
+import { InputAdornment, TextField } from '@mui/material';
+import { getCandidates } from 'src/utils/api/candidate';
+import CandidateTableRow from '../candidate-table-row';
+import CandidateForm from '../candidateForm';
 
 // ----------------------------------------------------------------------
-// compliance checker
+// candidate checker
 
 // Pin
 // fistname
@@ -62,11 +59,13 @@ import ComplianceForm from '../complianceForm';
 // passchange and
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'firstname', label: 'First Name' },
-  { id: 'lastname', label: 'Last Name' },
-  { id: 'location', label: 'Location' },
+  { id: 'firstName', label: 'First Name' },
+  { id: 'lastName', label: 'Last Name' },
   { id: 'pin', label: 'Pin' },
+  { id: 'location', label: 'Location' },
+  { id: 'portal', label: 'Portal' },
+  { id: 'isActive', label: 'Status' },
+  { id: 'lastScan', label: 'Last Scan' },
   { id: '' },
 ];
 
@@ -80,13 +79,14 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function ComplianceListView() {
+export default function CandidateListView() {
   const theme = useTheme();
   const settings = useSettingsContext();
   // const router = useRouter();
   const table = useTable({ defaultOrderBy: 'createDate' });
   const confirm = useBoolean();
-  const [tableData, setTableData] = useState(_invoices);
+  const [tableData, setTableData] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const [filters, setFilters] = useState(defaultFilters);
   const [openPopup, setOpenPopup] = useState({
     open: false,
@@ -113,63 +113,6 @@ export default function ComplianceListView() {
 
   const denseHeight = table.dense ? 56 : 76;
 
-  const canReset =
-    !!filters.name ||
-    !!filters.service.length ||
-    filters.status !== 'all' ||
-    (!!filters.startDate && !!filters.endDate);
-
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
-
-  const getComplianceLength = (status) => tableData.filter((item) => item.status === status).length;
-
-  const getTotalAmount = (status) =>
-    sumBy(
-      tableData.filter((item) => item.status === status),
-      'totalAmount'
-    );
-
-  const getPercentByStatus = (status) => (getComplianceLength(status) / tableData.length) * 100;
-
-  // const TABS = [
-  //   { value: 'all', label: 'All', color: 'default', count: tableData.length },
-  //   {
-  //     value: 'paid',
-  //     label: 'Paid',
-  //     color: 'success',
-  //     count: getComplianceLength('paid'),
-  //   },
-  //   {
-  //     value: 'pending',
-  //     label: 'Pending',
-  //     color: 'warning',
-  //     count: getComplianceLength('pending'),
-  //   },
-  //   {
-  //     value: 'overdue',
-  //     label: 'Overdue',
-  //     color: 'error',
-  //     count: getComplianceLength('overdue'),
-  //   },
-  //   {
-  //     value: 'draft',
-  //     label: 'Draft',
-  //     color: 'default',
-  //     count: getComplianceLength('draft'),
-  //   },
-  // ];
-
-  const handleFilters = useCallback(
-    (name, value) => {
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table]
-  );
-
   const handleDeleteRow = useCallback(
     (id) => {
       const deleteRow = tableData.filter((row) => row.id !== id);
@@ -191,39 +134,37 @@ export default function ComplianceListView() {
     });
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-  const handleEditRow = useCallback((row) => {
-    setOpenPopup({
-      ...openPopup,
-      open: true,
-      isEdit: true,
-      row,
-    });
-  }, [openPopup]);
+  const handleEditRow = useCallback(
+    (row) => {
+      setOpenPopup({
+        ...openPopup,
+        open: true,
+        isEdit: true,
+        row,
+      });
+    },
+    [openPopup]
+  );
 
-  // const handleViewRow = useCallback(
-  //   (id) => {
-  //     router.push(paths.dashboard.compliance.details(id));
-  //   },
-  //   [router]
-  // );
-
-  // const handleFilterStatus = useCallback(
-  //   (event, newValue) => {
-  //     handleFilters('status', newValue);
-  //   },
-  //   [handleFilters]
-  // );
-
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
-
-  const handleCreateCompliance = () => {
+  const handleCreateCandidate = () => {
     setOpenPopup((prev) => ({
       ...prev,
       open: true,
     }));
   };
+
+  const handleFilterChange = (event) => {
+    const { value } = event.target;
+    setSearchText(value);
+  };
+
+  useEffect(() => {
+    async function init() {
+      const result = await getCandidates();
+      console.log(result, 'resutl:');
+    }
+    init();
+  }, []);
 
   return (
     <>
@@ -236,8 +177,8 @@ export default function ComplianceListView() {
               href: paths.dashboard.root,
             },
             {
-              name: 'Compliance',
-              href: paths.dashboard.compliance.root,
+              name: 'Candidate',
+              href: paths.dashboard.candidate.root,
             },
             {
               name: 'List',
@@ -246,12 +187,12 @@ export default function ComplianceListView() {
           action={
             <Button
               // component={RouterLink}
-              // href={paths.dashboard.compliance.new}
-              onClick={handleCreateCompliance}
+              // href={paths.dashboard.candidate.new}
+              onClick={handleCreateCandidate}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Compliance
+              New Candidate
             </Button>
           }
           sx={{
@@ -259,113 +200,35 @@ export default function ComplianceListView() {
           }}
         />
 
-        <Card
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        >
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <ComplianceAnalytic
-                title="Total"
-                total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, 'totalAmount')}
-                icon="solar:bill-list-bold-duotone"
-                color={theme.palette.info.main}
-              />
-
-              <ComplianceAnalytic
-                title="Paid"
-                total={getComplianceLength('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalAmount('paid')}
-                icon="solar:file-check-bold-duotone"
-                color={theme.palette.success.main}
-              />
-
-              <ComplianceAnalytic
-                title="Pending"
-                total={getComplianceLength('pending')}
-                percent={getPercentByStatus('pending')}
-                price={getTotalAmount('pending')}
-                icon="solar:sort-by-time-bold-duotone"
-                color={theme.palette.warning.main}
-              />
-
-              <ComplianceAnalytic
-                title="Overdue"
-                total={getComplianceLength('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalAmount('overdue')}
-                icon="solar:bell-bing-bold-duotone"
-                color={theme.palette.error.main}
-              />
-
-              <ComplianceAnalytic
-                title="Draft"
-                total={getComplianceLength('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalAmount('draft')}
-                icon="solar:file-corrupted-bold-duotone"
-                color={theme.palette.text.secondary}
-              />
-            </Stack>
-          </Scrollbar>
-        </Card>
-
         <Card>
-          {/* <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
+          <Stack
+            spacing={2}
+            alignItems={{ xs: 'flex-end', md: 'center' }}
+            direction={{
+              xs: 'column',
+              md: 'row',
+            }}
             sx={{
-              px: 2.5,
-              boxShadow: `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+              p: 2.5,
+              pr: { xs: 2.5, md: 1 },
             }}
           >
-            {TABS.map((tab) => (
-              <Tab
-                key={tab.value}
-                value={tab.value}
-                label={tab.label}
-                iconPosition="end"
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={tab.color}
-                  >
-                    {tab.count}
-                  </Label>
-                }
+            <Stack direction="row" alignItems="center" spacing={2} sx={{ width: 1 }}>
+              <TextField
+                fullWidth
+                value={searchText}
+                onChange={handleFilterChange}
+                placeholder="Search customer or candidate number..."
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            ))}
-          </Tabs> */}
-
-          <ComplianceTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            dateError={dateError}
-            serviceOptions={INVOICE_SERVICE_OPTIONS.map((option) => option.name)}
-          />
-
-          {canReset && (
-            <ComplianceTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
+            </Stack>
+          </Stack>
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <TableSelectedAction
@@ -431,7 +294,7 @@ export default function ComplianceListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <ComplianceTableRow
+                      <CandidateTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -447,7 +310,7 @@ export default function ComplianceListView() {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   />
 
-                  <TableNoData notFound={notFound} />
+                  <TableNoData notFound={!dataFiltered.length} />
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -490,7 +353,7 @@ export default function ComplianceListView() {
       />
 
       {openPopup.open && (
-        <ComplianceForm
+        <CandidateForm
           openForm={openPopup.open}
           isEdit={openPopup.isEdit}
           handleClose={() => {
@@ -524,28 +387,28 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (name) {
     inputData = inputData.filter(
-      (compliance) =>
-        compliance.complianceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        compliance.complianceTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (candidate) =>
+        candidate.candidateNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        candidate.candidateTo.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((compliance) => compliance.status === status);
+    inputData = inputData.filter((candidate) => candidate.status === status);
   }
 
   if (service.length) {
-    inputData = inputData.filter((compliance) =>
-      compliance.items.some((filterItem) => service.includes(filterItem.service))
+    inputData = inputData.filter((candidate) =>
+      candidate.items.some((filterItem) => service.includes(filterItem.service))
     );
   }
 
   if (!dateError) {
     if (startDate && endDate) {
       inputData = inputData.filter(
-        (compliance) =>
-          fTimestamp(compliance.createDate) >= fTimestamp(startDate) &&
-          fTimestamp(compliance.createDate) <= fTimestamp(endDate)
+        (candidate) =>
+          fTimestamp(candidate.createDate) >= fTimestamp(startDate) &&
+          fTimestamp(candidate.createDate) <= fTimestamp(endDate)
       );
     }
   }
