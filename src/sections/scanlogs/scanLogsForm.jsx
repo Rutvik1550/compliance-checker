@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -10,10 +10,7 @@ import {
   Typography,
   IconButton,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Autocomplete,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import CloseIcon from '@mui/icons-material/Close';
@@ -22,12 +19,14 @@ import { Form, FormikProvider, useFormik } from 'formik';
 import * as Yup from 'yup';
 // import { status } from "../../../../utils/const";
 import { useSnackbar } from 'notistack';
+import { addTrigger } from 'src/utils/api/scanLogs';
 
 // ----------------------------------------------------------------------
 
 const useStyles = makeStyles(() => ({
   formItem: {
     marginBottom: 10,
+    marginTop: 10
   },
   dialogMain: {
     background: '#00000047',
@@ -38,31 +37,23 @@ const useStyles = makeStyles(() => ({
 }));
 
 const formObj = {
-  pin: '',
-  firstname: '',
-  lastname: '',
-  location: '',
-  portal: '',
+  candidateIds: [],
 };
 
-function CandidateForm({ openForm, handleClose, data, isEdit }) {
+function ScanLogsForm({ openForm, handleClose, data, isEdit, candidateList }) {
   const classes = useStyles();
   // eslint-disable-next-line no-unused-vars
-  // const [CandidateData, setCandidateData] = useState(formObj);
+  // const [ScanLogsData, setScanLogsData] = useState(formObj);
   const { enqueueSnackbar } = useSnackbar();
 
-  const CandidateSchema = Yup.object().shape({
-    pin: Yup.string().required('This field is required'),
-    firstname: Yup.string().required('This field is required'),
-    lastname: Yup.string().required('This field is required'),
-    location: Yup.string().required('This field is required'),
-    portal: Yup.string().required('This field is required'),
+  const ScanLogsSchema = Yup.object().shape({
+    candidateIds: Yup.array().required('This field is required'),
   });
 
   const formik = useFormik({
     validateOnChange: true,
     validateOnBlur: true,
-    validationSchema: CandidateSchema,
+    validationSchema: ScanLogsSchema,
     enableReinitialize: true,
     initialValues: isEdit ? data : formObj,
     onSubmit: async (v, { setSubmitting, setErrors }) => {
@@ -70,29 +61,18 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
       try {
         // eslint-disable-next-line no-unused-vars
         const dataObj = {
-          pin: values.pin,
+          candidateIds: values.candidateIds,
         };
-        console.log(values, 'value::');
-
-        // if(isEdit) {
-        //   const res = await editCandidateData(dataObj, data.id);
-        //   if (res?.message) {
-        //     enqueueSnackbar(res.message, {
-        //       variant: "success",
-        //     });
-        //   }
-        // } else {
-        //   const res = await addCandidateData(data);
-        //   if (res?.message) {
-        //     enqueueSnackbar(res.message, {
-        //       variant: "success",
-        //     });
-        //   }
-        // }
+        const res = await addTrigger(dataObj);
+        if (res?.data?.message) {
+          enqueueSnackbar(res.data.message, {
+            variant: 'success',
+          });
+        }
 
         handleClose();
       } catch (error) {
-        console.log('Error with CandidateForm onSubmit: ', error);
+        console.log('Error with ScanLogsForm onSubmit: ', error);
         enqueueSnackbar(error.message, { variant: 'error' });
       }
     },
@@ -104,9 +84,7 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
     <div>
       <Dialog className={classes.dialogMain} open={openForm} onClose={handleClose} fullWidth>
         <DialogTitle>
-          <Typography variant="heading2">
-            {isEdit ? 'Edit Candidate' : 'Add Candidate'}
-          </Typography>
+          <Typography variant="heading2">{isEdit ? 'Edit ScanLogs' : 'Add ScanLogs'}</Typography>
           <IconButton
             color="inherit"
             edge="end"
@@ -120,59 +98,23 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
           <FormikProvider value={formik}>
             <Form noValidate autoComplete="off" onSubmit={formik.handleSubmit}>
               <Box className={classes.formItem}>
-                <TextField
-                  fullWidth
-                  label="Pin"
-                  value={values.pin}
-                  onChange={(e) => {
-                    setFieldValue('pin', e.target.value);
+                <Autocomplete
+                  multiple
+                  id="Candidate"
+                  options={candidateList}
+                  getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+                  onChange={(e, value) => {
+                    setFieldValue(
+                      'candidateIds',
+                      value.map((item) => item.id)
+                    );
                   }}
-                  error={Boolean(touched.pin && errors.pin)}
-                  helperText={touched.pin && errors.pin}
-                  className={classes.formItem}
+                  filterSelectedOptions
+                  renderInput={(params) => (
+                    <TextField {...params} label="Candidate" placeholder="" />
+                  )}
                 />
-              </Box>
-              <Box className={classes.formItem}>
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  value={values.firstname}
-                  onChange={(e) => {
-                    setFieldValue('firstname', e.target.value);
-                  }}
-                  error={Boolean(touched.firstname && errors.firstname)}
-                  helperText={touched.firstname && errors.firstname}
-                  className={classes.formItem}
-                />
-              </Box>
-              <Box className={classes.formItem}>
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  value={values.lastname}
-                  onChange={(e) => {
-                    setFieldValue('lastname', e.target.value);
-                  }}
-                  error={Boolean(touched.lastname && errors.lastname)}
-                  helperText={touched.lastname && errors.lastname}
-                  className={classes.formItem}
-                />
-              </Box>
-              <Box className={classes.formItem}>
-                <TextField
-                  fullWidth
-                  label="Location"
-                  value={values.location}
-                  onChange={(e) => {
-                    setFieldValue('location', e.target.value);
-                  }}
-                  error={Boolean(touched.location && errors.location)}
-                  helperText={touched.location && errors.location}
-                  className={classes.formItem}
-                />
-              </Box>
-              <Box className={classes.formItem}>
-                <FormControl fullWidth>
+                {/* <FormControl fullWidth>
                   <InputLabel id="portal-select-label">Portal</InputLabel>
                   <Select
                     labelId="portal-select-label"
@@ -190,7 +132,7 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
                     <MenuItem value="nmc">NMC</MenuItem>
                     <MenuItem value="dbs">DBS</MenuItem>
                   </Select>
-                </FormControl>
+                </FormControl> */}
               </Box>
             </Form>
           </FormikProvider>
@@ -202,18 +144,19 @@ function CandidateForm({ openForm, handleClose, data, isEdit }) {
             onClick={handleSubmit}
             variant="contained"
           >
-            Save
+            Trigger
           </LoadingButton>
         </DialogActions>
       </Dialog>
     </div>
   );
 }
-CandidateForm.propTypes = {
+ScanLogsForm.propTypes = {
   openForm: PropTypes.any,
   handleClose: PropTypes.any,
   data: PropTypes.any,
   isEdit: PropTypes.bool,
+  candidateList: PropTypes.array,
 };
 
-export default CandidateForm;
+export default ScanLogsForm;

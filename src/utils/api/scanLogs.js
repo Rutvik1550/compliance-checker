@@ -13,3 +13,16 @@ export const getScanLogs = async () => {
     return { error };
   }
 };
+
+export const addTrigger = async (data) => {
+  try {
+    const res = await axiosInstance.post(API_PATHS.trigger, data);
+    if (res?.data) {
+      return res.data;
+    }
+    return null;
+  } catch (error) {
+    console.log('Error with addTrigger: ', error);
+    return { error };
+  }
+};

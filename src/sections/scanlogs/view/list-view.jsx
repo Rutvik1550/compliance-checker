@@ -32,6 +32,7 @@ import {
 } from 'src/components/table';
 //
 import { InputAdornment, TextField } from '@mui/material';
+import { getCandidates } from 'src/utils/api/candidate';
 import { getScanLogs } from 'src/utils/api/scanLogs';
 import ScanLogsTableRow from '../table-row';
 import ScanLogsForm from '../scanLogsForm';
@@ -62,6 +63,7 @@ export default function ScanLogsListView() {
     isEdit: false,
     row: null,
   });
+  const [candidateList, setCandidateList] = useState([])
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -133,8 +135,18 @@ export default function ScanLogsListView() {
     }
   }
 
+  async function getCandidateList() {
+    const result = await getCandidates();
+    if (result?.data) {
+      setCandidateList(
+        result.data
+      );
+    }
+  }
+
   useEffect(() => {
     getScanLogList();
+    getCandidateList();
   }, []);
 
   return (
@@ -335,6 +347,7 @@ export default function ScanLogsListView() {
             });
           }}
           data={openPopup.row}
+          candidateList={candidateList}
         />
       )}
     </>
